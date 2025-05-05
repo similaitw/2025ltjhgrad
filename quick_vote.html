@@ -2,75 +2,83 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>畢業歌投票</title>
+<title>畢業歌票選</title>
 <style>
 body{background:#111;color:#fff;font-family:sans-serif;text-align:center;margin:0}
 h1{padding:20px 0}
 .song{background:#222;border-radius:12px;margin:20px auto;max-width:720px;padding:10px}
 .song iframe{width:100%;height:300px;border:none;border-radius:8px}
 .info{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.title{font-weight:bold}
 button{background:#1e88e5;border:none;color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer}
 button:hover{background:#1565c0}
-.title{font-weight:bold}
 </style>
 </head>
 <body>
 <h1>🎵 畢業歌曲票選</h1>
 
-<div class="song">
-  <iframe src="https://www.youtube.com/embed/wBXRvmNsEmM?rel=0&modestbranding=1" allowfullscreen></iframe>
-  <div class="info">
-    <span class="title">歌曲 1</span>
-    <span class="count" id="count-歌曲 1">0</span> 票
-    <button onclick="vote("\u6b4c\u66f2 1")">投票</button>
-  </div>
-</div>
-
-<div class="song">
-  <iframe src="https://www.youtube.com/embed/VKfdd0EZsqI?rel=0&modestbranding=1" allowfullscreen></iframe>
-  <div class="info">
-    <span class="title">歌曲 2</span>
-    <span class="count" id="count-歌曲 2">0</span> 票
-    <button onclick="vote("\u6b4c\u66f2 2")">投票</button>
-  </div>
-</div>
-
-<div class="song">
-  <iframe src="https://www.youtube.com/embed/X3rh1fQrXcw?rel=0&modestbranding=1" allowfullscreen></iframe>
-  <div class="info">
-    <span class="title">歌曲 3</span>
-    <span class="count" id="count-歌曲 3">0</span> 票
-    <button onclick="vote("\u6b4c\u66f2 3")">投票</button>
-  </div>
-</div>
-
-<div class="song">
-  <iframe src="https://www.youtube.com/embed/FXiDZ7q8x8k?rel=0&modestbranding=1" allowfullscreen></iframe>
-  <div class="info">
-    <span class="title">歌曲 4</span>
-    <span class="count" id="count-歌曲 4">0</span> 票
-    <button onclick="vote("\u6b4c\u66f2 4")">投票</button>
-  </div>
-</div>
-
+    <div class="song">
+      <iframe src="https://www.youtube.com/embed/wBXRvmNsEmM?rel=0&modestbranding=1" allowfullscreen></iframe>
+      <div class="info">
+        <span class="title">歌曲 1</span>
+        <span class="count" id="c-歌曲 1">0</span> 票
+        <button onclick="vote('歌曲 1')">投票</button>
+      </div>
+    </div>
+    
+    <div class="song">
+      <iframe src="https://www.youtube.com/embed/VKfdd0EZsqI?rel=0&modestbranding=1" allowfullscreen></iframe>
+      <div class="info">
+        <span class="title">歌曲 2</span>
+        <span class="count" id="c-歌曲 2">0</span> 票
+        <button onclick="vote('歌曲 2')">投票</button>
+      </div>
+    </div>
+    
+    <div class="song">
+      <iframe src="https://www.youtube.com/embed/X3rh1fQrXcw?rel=0&modestbranding=1" allowfullscreen></iframe>
+      <div class="info">
+        <span class="title">歌曲 3</span>
+        <span class="count" id="c-歌曲 3">0</span> 票
+        <button onclick="vote('歌曲 3')">投票</button>
+      </div>
+    </div>
+    
+    <div class="song">
+      <iframe src="https://www.youtube.com/embed/FXiDZ7q8x8k?rel=0&modestbranding=1" allowfullscreen></iframe>
+      <div class="info">
+        <span class="title">歌曲 4</span>
+        <span class="count" id="c-歌曲 4">0</span> 票
+        <button onclick="vote('歌曲 4')">投票</button>
+      </div>
+    </div>
+    
 <script>
 const API="https://script.google.com/macros/s/AKfycbyu_MTDHN0tmsbBck39gDU_wMoMdseR3VMTI0Am14QLdceTYU2xLYiPM4KABHvfNK36FA/exec";
 function vote(song){
- fetch(API,{method:"POST",body:JSON.stringify({song})})
-   .then(r=>r.text())
-   .then(()=>{alert("感謝投票！");load();})
-   .catch(()=>alert("送出失敗，請稍後再試"));
+  fetch(API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({song})
+  })
+  .then(r=>r.text())
+  .then(txt=>{
+      if(txt.trim().toLowerCase().includes("success")){
+          alert("✅ 感謝投票！");
+          loadCounts();
+      }else{
+          alert("⚠️ 無法寫入，訊息：\n"+txt);
+      }
+  })
+  .catch(err=>alert("⚠️ 連線失敗："+err));
 }
-function load(){
- fetch(API).then(r=>r.json()).then(data=>{
-   for(const s in data){
-     const el=document.getElementById("count-"+s);
-     if(el) el.textContent=data[s];
-   }
- });
+function loadCounts(){
+  fetch(API)
+    .then(r=>r.json())
+    .then(data=>{for(const k in data){const el=document.getElementById("c-"+k);if(el)el.textContent=data[k];}})
+    .catch(()=>{/* 忽略錯誤 */});
 }
-load();
+loadCounts();
 </script>
 </body>
 </html>
-
